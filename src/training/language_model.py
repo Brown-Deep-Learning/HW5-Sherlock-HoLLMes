@@ -1,7 +1,6 @@
 import tensorflow as tf
 import math
 from typing import Optional, Tuple, Dict, Any
-from src.models.transformer import TransformerLanguageModel, create_language_model
 
 
 
@@ -110,15 +109,15 @@ class TextSampler:
 
 class TextGenerator:
     """
-    High-level text generation interface using TransformerLanguageModel.
+    High-level text generation interface.
     """
 
-    def __init__(self, model: TransformerLanguageModel, tokenizer=None):
+    def __init__(self, model, tokenizer=None):
         """
         Initialize text generator.
 
         Args:
-            model: Trained TransformerLanguageModel
+            model: Trained model
             tokenizer: Tokenizer for encoding/decoding text
         """
         self.model = model
