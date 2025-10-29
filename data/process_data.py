@@ -8,7 +8,7 @@ import pickle
 def download_raw_text(text_list):
 	os.makedirs('raw_text', exist_ok=True)
 
-	with open(text_list) as f:
+	with open(text_list, encoding='utf-8') as f:
 		lines = f.read().strip().split('\n')
 		for line in lines:
 			data = line.split(',')
@@ -21,8 +21,8 @@ def download_raw_text(text_list):
 				response = requests.get(url)
 				response.raise_for_status()
 
-				filename = f"raw_text/{title}.txt"
-				with open(filename, 'w') as f:
+				filename = os.path.join('raw_text', f"{title}.txt")
+				with open(filename, 'w', encoding='utf-8') as f:
 					f.write(response.text)
 			except Exception as e:
 				print(e)
@@ -31,8 +31,8 @@ def download_raw_text(text_list):
 					response = requests.get(url)
 					response.raise_for_status()
 
-					filename = f"raw_text/{title}.txt"
-					with open(filename, 'w') as f:
+					filename = os.path.join('raw_text', f"{title}.txt")
+					with open(filename, 'w', encoding='utf-8') as f:
 						f.write(response.text)
 				except Exception as e:
 					print(f"Failed to download {title} by {author} from {url}:\n{e}")
@@ -117,15 +117,16 @@ def clean_text(text):
 def process_all_texts(folder):
 	os.makedirs('processed_text', exist_ok=True)
 	combined = ''
-	for file in glob.glob(folder+'/*'):
-		with open(file, 'r') as f:
+	for file in glob.glob(os.path.join(folder, '*')):
+		with open(file, 'r', encoding='utf-8') as f:
 			text = f.read()
 			text = clean_text(text)
 			combined += text + '\n\n\n\n'
-		new_file = f'processed_text/{file.split("/")[-1]}'
-		with open(new_file, 'w') as f:
+		filename = os.path.basename(file)
+		new_file = os.path.join('processed_text', filename)
+		with open(new_file, 'w', encoding='utf-8') as f:
 			f.write(text)
-	with open('combined_mystery.txt', 'w') as f:
+	with open('combined_mystery.txt', 'w', encoding='utf-8') as f:
 		f.write(combined)
 
 def tokenize_data(combined_text_file, vocab_size=10000):
@@ -139,7 +140,7 @@ def tokenize_data(combined_text_file, vocab_size=10000):
 		word_to_idx: Dictionary mapping words to their token ids
 		vocab: List of words in the vocabulary (index corresponds to token id)
 	"""
-	with open(combined_text_file, 'r') as f:
+	with open(combined_text_file, 'r', encoding='utf-8') as f:
 		text = f.read()
 
 	# Basic tokenization (split on whitespace and punctuation)
