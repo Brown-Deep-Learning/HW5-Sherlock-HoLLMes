@@ -12,9 +12,9 @@ def download_raw_text(text_list):
 		lines = f.read().strip().split('\n')
 		for line in lines:
 			data = line.split(',')
-			id = data[0]
-			title = data[1]
-			author = data[2]
+			id = data[0].strip()
+			title = data[1].strip()
+			author = data[2].strip()
 			url = f"https://www.gutenberg.org/cache/epub/{id}/pg{id}.txt"
 			print(f"Attempting to download {title} by {author}")
 			try:
@@ -118,7 +118,7 @@ def process_all_texts(folder):
 	os.makedirs('processed_text', exist_ok=True)
 	combined = ''
 	for file in glob.glob(os.path.join(folder, '*')):
-		with open(file, 'r', encoding='utf-8') as f:
+		with open(file.strip(), 'r', encoding='utf-8') as f:
 			text = f.read()
 			text = clean_text(text)
 			combined += text + '\n\n\n\n'
