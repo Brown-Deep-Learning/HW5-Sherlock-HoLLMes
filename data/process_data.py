@@ -6,37 +6,38 @@ from collections import Counter
 import pickle
 
 def download_raw_text(text_list):
-	os.makedirs('raw_text', exist_ok=True)
+    os.makedirs('raw_text', exist_ok=True)
 
-	with open(text_list, encoding='utf-8') as f:
-		lines = f.read().strip().split('\n')
-		for line in lines:
-			data = line.split(',')
-			id = data[0].strip()
-			title = data[1].strip()
-			author = data[2].strip()
-			url = f"https://www.gutenberg.org/cache/epub/{id}/pg{id}.txt"
-			print(f"Attempting to download {title} by {author}")
-			try:
-				response = requests.get(url)
-				response.raise_for_status()
+    with open(text_list, encoding='utf-8') as f:
+        lines = f.read().strip().split('\n')
+        for line in lines:
+            data = line.split(',')
+            id = data[0].strip()
+            title = data[1].strip()
+            author = data[2].strip()
+            url = f"https://www.gutenberg.org/cache/epub/{id}/pg{id}.txt"
+            print(f"Attempting to download {title} by {author}")
+            safe_title = re.sub(r'[<>:"/\\|?*]', '', title)
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
 
-				filename = os.path.join('raw_text', f"{title}.txt")
-				with open(filename, 'w', encoding='utf-8') as f:
-					f.write(response.text)
-			except Exception as e:
-				print(e)
-				try:
-					url = f"https://www.gutenberg.org/files/{id}/{id}.txt"
-					response = requests.get(url)
-					response.raise_for_status()
+                filename = os.path.join('raw_text', f"{safe_title}.txt")
+                with open(filename, 'w', encoding='utf-8') as f:
+                    f.write(response.text)
+            except Exception as e:
+                print(e)
+                try:
+                    url = f"https://www.gutenberg.org/files/{id}/{id}.txt"
+                    response = requests.get(url)
+                    response.raise_for_status()
 
-					filename = os.path.join('raw_text', f"{title}.txt")
-					with open(filename, 'w', encoding='utf-8') as f:
-						f.write(response.text)
-				except Exception as e:
-					print(f"Failed to download {title} by {author} from {url}:\n{e}")
-					print("Work not accessible")
+                    filename = os.path.join('raw_text', f"{safe_title}.txt")
+                    with open(filename, 'w', encoding='utf-8') as f:
+                        f.write(response.text)
+                except Exception as e:
+                    print(f"Failed to download {title} by {author} from {url}:\n{e}")
+                    print("Work not accessible")
 
 def clean_text(text):
 	# Gutenberg header/footer can be a bit inconsistent, so we check both markers
