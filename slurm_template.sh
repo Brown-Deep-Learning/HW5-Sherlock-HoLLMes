@@ -26,17 +26,15 @@ echo "Job ID: $SLURM_JOB_ID"
 echo "Node: $SLURM_NODELIST"
 echo "=========================================="
 echo ""
-# Check GPU allocation
+
 echo "GPU Information (from host):"
 nvidia-smi
 echo ""
 
-# Test GPU inside container
 echo "GPU Information (inside container):"
 $EXEC_PATH $CONTAINER_PATH nvidia-smi
 echo ""
 
-# Test TensorFlow GPU detection inside container
 echo "TensorFlow GPU Detection:"
 $EXEC_PATH $CONTAINER_PATH python -c "import tensorflow as tf; print('TF version:', tf.__version__); print('Built with CUDA:', tf.test.is_built_with_cuda()); print('GPUs detected:', len(tf.config.list_physical_devices('GPU'))); print('GPU devices:', tf.config.list_physical_devices('GPU'))"
 echo ""
@@ -54,15 +52,18 @@ echo "Starting main Python script at $(date)"
 echo "=========================================="
 echo ""
 
-# TODO: Replace the ??? with actual hyperparameter values YOU want to use
+cd "${SLURM_SUBMIT_DIR}" || exit 1
+echo "Working directory: $(pwd)"
+echo ""
+
 $EXEC_PATH $CONTAINER_PATH python -u main.py \
-    --model-type ??? \
-    --epochs ??? \
-    --learning-rate ??? \
-    --batch-size ??? \
-    --seq-length ??? \
-    --vocab-size ??? \
-    --d-model ???
+--model-type transformer \
+--epochs ??? \
+--learning-rate ??? \
+--batch-size ??? \
+--seq-length ??? \
+--vocab-size ??? \
+--d-model ???
 
 EXIT_CODE=$?
 
